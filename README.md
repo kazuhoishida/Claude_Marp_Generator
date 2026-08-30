@@ -16,8 +16,14 @@ marp-cli が自動で用意するので個別のインストールは要らな�
 
 ### 1. 原稿を置く
 
-`input/` にラフな状態で置く。体裁は整えなくてよい。
-書き方は [input/input-example.md](input/input-example.md) を見る。
+`input/` にラフな状態で置く。箇条書き・議事録・メモのままでよい。
+体裁を整えるのはこのシステムの仕事。
+
+書いてあると精度が上がるもの:
+
+- 聞き手は誰か
+- 聞き手に何をしてほしいか
+- 使いたい画像があればそのパス
 
 ### 2. スライドにする
 
@@ -103,11 +109,14 @@ markdown の front-matter に `style:` を書いて個別に上書きしない
 `generate_placeholders.py` は標準ライブラリだけで動く。
 差し替え後は不要なので消してよい。
 
-## サンプル
+## 見本
 
-- 入力: [input/input-example.md](input/input-example.md)
-- 出力: [output/output-example.md](output/output-example.md)
-- テンプレート: [YYYYMMDD_template.md](YYYYMMDD_template.md)
+[YYYYMMDD_template.md](YYYYMMDD_template.md) が唯一の見本。使える記法と
+レイアウトが1枚ずつ入っていて、コピーして書き始める下敷きも兼ねる。
+`/create-slides` もこれを読む。
+
+**中身の作り方**（構成の型・見出しの立て方）は見本ではなくルールを見る。
+[.cursor/rules/compelling-content.mdc](.cursor/rules/compelling-content.mdc)。
 
 PDF はリポジトリに含めていない。テーマを変えると見本の方が古くなり、
 直したはずの見た目と食い違うため。見た目を確認するときは書き出す。

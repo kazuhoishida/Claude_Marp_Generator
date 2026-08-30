@@ -26,7 +26,9 @@ input/*
 output/*
 resources/*
 
-# README から参照しているサンプルは追跡する
-!input/input-example.md
-!output/output-example.md
+# 空でもディレクトリを残す。clone 直後にビルドが通るようにするため。
+!input/.gitkeep
+!output/.gitkeep
+
+# resources/ の使い方の説明。中身のルールを書いてあるので追跡する
 !resources/README.md
