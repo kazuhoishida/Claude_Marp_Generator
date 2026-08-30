@@ -1,0 +1,16 @@
+{
+  "name": "slide-deck-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Marp によるスライド生成システム",
+  "scripts": {
+    "pdf": "marp --theme-set themes/ --html --allow-local-files --pdf",
+    "images": "marp --theme-set themes/ --html --allow-local-files --images png",
+    "html": "marp --theme-set themes/ --html --allow-local-files",
+    "preview": "marp --theme-set themes/ --html --allow-local-files -s .",
+    "assets": "python3 .images/generate_placeholders.py"
+  },
+  "devDependencies": {
+    "@marp-team/marp-cli": "^4.2.3"
+  }
+}

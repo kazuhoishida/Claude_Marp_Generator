@@ -1,0 +1,11 @@
+{
+  // VS Code の Marp 拡張にカスタムテーマを教える。
+  // これが無いと、エディタのプレビューだけ素の Marp テーマで表示され、
+  // ビルドした PDF と見た目が食い違う。
+  // npm script 側の `--theme-set themes/` と対になる設定。
+  "markdown.marp.themes": ["./themes/theme.css"],
+
+  // 段組みの `<div class="columns">` を効かせる。
+  // npm script 側の `--html` と対になる設定。
+  "markdown.marp.enableHtml": true
+}

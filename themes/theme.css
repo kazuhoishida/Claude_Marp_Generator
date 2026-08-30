@@ -1,0 +1,285 @@
+/* @theme custom-deck */
+
+/*
+ * カスタムスライドテーマ
+ *
+ * 設計方針:
+ *   - 背景は白。プロジェクターでも印刷でも破綻しない
+ *   - コードは背景と文字色のコントラストを必ず確保する
+ *   - 画像はスライド端に触れさせない。必ず余白の内側に浮かせる
+ *
+ * 使い方:
+ *   front-matter で `theme: custom-deck` を指定する
+ *   marp-cli には `--theme-set themes/` を渡す
+ */
+
+@import 'default';
+
+:root {
+  /* 配色 */
+  --color-bg: #ffffff;
+  --color-fg: #24292f;
+  --color-accent: #2b6cb0;
+  --color-muted: #6b7280;
+  --color-border: #d8dde3;
+
+  /* コード */
+  --code-bg: #eef1f5;
+  --code-fg: #c0341f;
+  --codeblock-bg: #f5f6f8;
+  --codeblock-fg: #24292f;
+
+  /* レイアウト */
+  --slide-padding: 70px;
+  --figure-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+
+  /*
+   * フォント。欧文は Helvetica、和文はヒラギノ角ゴ。
+   *
+   * font-family は1文字ずつ先頭から順に探すため、和文グリフを持たない
+   * Helvetica を先に置くと、英数字だけ Helvetica になり、かなと漢字は
+   * Hiragino Sans に落ちる。この順序を入れ替えると全部ヒラギノの欧文になる。
+   *
+   * 後半は macOS 以外でビルドしたときの保険。
+   */
+  --font-sans: Helvetica, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+}
+
+/*
+ * ベーステーマは `place-content: safe center center` で本文を上下中央に置く。
+ * 本文スライドは上寄せのほうが行数が増えたときの崩れ方が読みやすいので、
+ * flex コンテナであることまで含めて明示的に上書きする。
+ * （display を書かないと justify-content が効かない場合がある）
+ */
+section {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 26px;
+  padding: var(--slide-padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+/* ---------------------------------------------------------------
+   見出し
+   --------------------------------------------------------------- */
+
+h1,
+h2 {
+  color: var(--color-accent);
+  margin: 0 0 0.4em;
+}
+
+h1 {
+  font-size: 1.7em;
+}
+
+h2 {
+  font-size: 1.35em;
+}
+
+h3 {
+  font-size: 1.15em;
+  color: var(--color-fg);
+}
+
+/* ---------------------------------------------------------------
+   本文
+   --------------------------------------------------------------- */
+
+strong {
+  color: var(--color-fg);
+  font-weight: 700;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+ul,
+ol {
+  margin: 0.4em 0;
+}
+
+li {
+  margin: 0.35em 0;
+}
+
+blockquote {
+  border-left: 4px solid var(--color-border);
+  color: var(--color-muted);
+  margin: 0.8em 0;
+  padding: 0.2em 0 0.2em 1em;
+}
+
+/* ---------------------------------------------------------------
+   コード
+   インラインとブロックで役割を分ける。
+   どちらも背景と文字色のコントラストを固定する。
+   --------------------------------------------------------------- */
+
+code {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  font-family: "SF Mono", "Roboto Mono", Consolas, monospace;
+  border-radius: 4px;
+}
+
+pre {
+  background: var(--codeblock-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+pre code {
+  background: transparent;
+  color: var(--codeblock-fg);
+}
+
+/* ---------------------------------------------------------------
+   画像
+   スライド端に接触させない。既定は小さめに抑え、
+   図版が主役のスライドだけ figure-full で拡大する。
+   --------------------------------------------------------------- */
+
+img {
+  display: block;
+  margin: 20px auto 0;
+  max-width: 560px;
+  max-height: 300px;
+  border-radius: 10px;
+  box-shadow: var(--figure-shadow);
+}
+
+/*
+ * 図版が主役のスライド。
+ * 高さの上限は「見出し + 説明1行」が乗る前提で決めてある。
+ * 720px - 上下 padding 140px - 見出しと説明で約 150px = 430px。
+ * ここを増やすと縦長の画像がスライド下端からはみ出す。
+ */
+section.figure-full img {
+  max-width: 880px;
+  max-height: 430px;
+}
+
+/* 影や角丸を付けたくない図（透過PNGの図解など） */
+section.figure-plain img,
+img.plain {
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* ---------------------------------------------------------------
+   表
+   --------------------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  margin: 0.6em 0;
+}
+
+th,
+td {
+  border: 1px solid var(--color-border);
+  padding: 0.4em 0.8em;
+}
+
+thead th {
+  background: var(--codeblock-bg);
+  color: var(--color-fg);
+}
+
+/* ---------------------------------------------------------------
+   ヘッダー / フッター / ページ番号
+   --------------------------------------------------------------- */
+
+header,
+footer {
+  color: var(--color-muted);
+  font-size: 0.6em;
+}
+
+section::after {
+  color: var(--color-muted);
+  font-size: 0.7em;
+}
+
+/* ---------------------------------------------------------------
+   レイアウトバリエーション
+   --------------------------------------------------------------- */
+
+/* 中央寄せ。表紙・章扉・締めに使う */
+section.lead {
+  justify-content: center;
+  text-align: center;
+}
+
+section.lead h1 {
+  font-size: 2em;
+}
+
+section.lead h2 {
+  font-size: 1.5em;
+}
+
+/*
+ * 表紙。
+ * 背景画像はテーマ側では指定しない。テーマ CSS は HTML にインライン展開されるため、
+ * css 内の相対パスは「出力先」基準で解決されてしまい壊れやすい。
+ * 背景は markdown 側で `![bg](../.images/background.png)` と書く。
+ */
+section.title {
+  justify-content: center;
+  text-align: center;
+}
+
+section.title h1 {
+  font-size: 2.2em;
+  margin-bottom: 0.2em;
+}
+
+section.title h2 {
+  color: var(--color-fg);
+  font-size: 1.1em;
+  font-weight: 400;
+}
+
+/* 章扉 */
+section.section-divider {
+  justify-content: center;
+  text-align: center;
+}
+
+section.section-divider h1 {
+  border-bottom: 4px solid var(--color-accent);
+  display: inline-block;
+  padding-bottom: 0.2em;
+}
+
+/*
+ * 2カラム。`<div class="columns">` を書くだけで効く。
+ * section 側のクラス指定は要らない（指定漏れで黙って段組みが崩れるため）。
+ */
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5em;
+  align-items: start;
+}
+
+.columns img {
+  margin-top: 0;
+  max-width: 100%;
+}
+
+/* 3カラム */
+.columns-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2em;
+  align-items: start;
+}
