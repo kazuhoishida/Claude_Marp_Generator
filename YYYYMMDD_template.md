@@ -10,6 +10,11 @@ header: "デッキのタイトル"
 
 ![bg](.images/background.png)
 
+<!--
+画像パスはこのファイルからの相対。output/ にコピーしたら `../` を足す。
+`.images/background.png` → `../.images/background.png`
+-->
+
 # プレゼンテーションのタイトル
 
 ## サブタイトル / 発表者 / YYYY-MM-DD
@@ -74,7 +79,19 @@ RETRY_LIMIT = 3
 
 ## 図は説明と分ける
 
+図には、何を見てほしいのかを1行添える。
+
 ![](.images/logo_primary.png)
+
+---
+
+<!-- _class: figure-plain -->
+
+## 透過PNGは影と角丸を消す
+
+背景が透過している図解やロゴは `figure-plain` を使う。
+
+![](.images/logo_vertical.png)
 
 ---
 
@@ -95,6 +112,34 @@ RETRY_LIMIT = 3
 
 - 長い文章には向かない
 - 収まらなければ2枚に割る
+
+</div>
+</div>
+
+---
+
+## 3カラムに並べる
+
+<div class="columns-3">
+<div>
+
+**左**
+
+短い語句向き
+
+</div>
+<div>
+
+**中**
+
+文章は入らない
+
+</div>
+<div>
+
+**右**
+
+4つ目は作れない
 
 </div>
 </div>
