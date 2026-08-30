@@ -7,6 +7,10 @@ node_modules/
 # 目視確認用に書き出す中間生成物。コミットしない
 *.0[0-9][0-9].png
 
+# ビルド成果物。テーマを変えると中身が古くなり、直したつもりの
+# 見た目と食い違うので追跡しない。確認するときは書き出し直す。
+*.pdf
+
 
 # ---------------------------------------------------------------
 # 各案件のコンテンツは追跡しない。
@@ -25,5 +29,4 @@ resources/*
 # README から参照しているサンプルは追跡する
 !input/input-example.md
 !output/output-example.md
-!output/output-example.pdf
 !resources/README.md

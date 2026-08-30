@@ -106,5 +106,12 @@ markdown の front-matter に `style:` を書いて個別に上書きしない
 ## サンプル
 
 - 入力: [input/input-example.md](input/input-example.md)
-- 出力: [output/output-example.md](output/output-example.md) / [PDF](output/output-example.pdf)
-- テンプレート: [YYYYMMDD_template.md](YYYYMMDD_template.md) / [PDF](YYYYMMDD_template.pdf)
+- 出力: [output/output-example.md](output/output-example.md)
+- テンプレート: [YYYYMMDD_template.md](YYYYMMDD_template.md)
+
+PDF はリポジトリに含めていない。テーマを変えると見本の方が古くなり、
+直したはずの見た目と食い違うため。見た目を確認するときは書き出す。
+
+```bash
+npm run pdf -- YYYYMMDD_template.md
+```
