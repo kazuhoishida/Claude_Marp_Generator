@@ -62,6 +62,8 @@ npm run pdf -- output/20260829_my-deck.md
 | --- | --- |
 | `npm run images -- <file>` | png で書き出す（確認用） |
 | `npm run pdf -- <file>` | PDF を書き出す |
+| `npm run pptx -- <file>` | PowerPoint を書き出す（各ページは画像。文字の編集は不可） |
+| `npm run pptx-editable -- <file>` | 文字を編集できる PowerPoint を書き出す（LibreOffice が要る） |
 | `npm run html -- <file>` | HTML を書き出す |
 | `npm run preview` | ブラウザでライブプレビュー |
 | `npm run assets` | プレースホルダー画像を再生成 |
@@ -77,7 +79,7 @@ npm run pdf -- output/20260829_my-deck.md
 .cursor/rules/         スライド作成ルール
   slide_rules.mdc        記法・レイアウト・配色・画像
   compelling-content.mdc 構成・見出し・文章
-.images/               ロゴ・背景
+.images/               背景・図版
 themes/theme.css       テーマ。見た目の定義はすべてここ
 input/                 入力（ラフな原稿）
 output/                出力（.md と .pdf）
@@ -99,12 +101,11 @@ markdown の front-matter に `style:` を書いて個別に上書きしない
 
 ## 画像アセット
 
-`.images/` の3点はプレースホルダー。本番のロゴ・背景ができたら
+`.images/` はプレースホルダー置き場。本番の図版ができたら
 **同名で上書きする**（参照側を変えずに済む）。
 
-- `background.png` — 表紙の背景（2560×1440）
-- `logo_primary.png` — 横組みロゴ
-- `logo_vertical.png` — 縦組みロゴ
+- `figure_sample.png` — 図版のダミー（テンプレートの `figure-full` で使用）
+- `background.png` — 現在どこからも参照していない。背景画像は使わない方針
 
 `generate_placeholders.py` は標準ライブラリだけで動く。
 差し替え後は不要なので消してよい。

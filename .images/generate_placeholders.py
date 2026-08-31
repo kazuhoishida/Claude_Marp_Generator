@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""プレースホルダーのブランドアセットを生成する。
+"""プレースホルダーの画像アセットを生成する。
 
-本番のロゴ・背景が用意できるまでの仮素材。差し替えるときは
-同名のファイルを上書きするだけでよい（テーマ側の参照は変わらない）。
+本番の背景・図版が用意できるまでの仮素材。差し替えるときは
+同名のファイルを上書きするだけでよい（参照側は変わらない）。
 
 標準ライブラリだけで動く。実行:
     python3 .images/generate_placeholders.py
@@ -101,32 +101,22 @@ def _render_shapes(width, height, shapes):
     return rows
 
 
-def make_logo_primary(width=900, height=220):
-    """横組み。マーク + 文字を模した帯。"""
+def make_figure_sample(width=900, height=540):
+    """図版のダミー。薄グレーの地に箱を並べた、図解を模したもの。"""
     shapes = [
-        ((20, 60, 160, 160), 22, ACCENT),
-        ((200, 74, 660, 106), 6, FG),
-        ((200, 122, 520, 148), 6, (120, 128, 138)),
+        ((60, 60, 380, 200), 12, ACCENT),
+        ((520, 60, 840, 200), 12, (120, 128, 138)),
+        ((60, 260, 840, 300), 6, FG),
+        ((60, 350, 380, 480), 12, (120, 128, 138)),
+        ((520, 350, 840, 480), 12, ACCENT),
+        ((0, 0, width, height), 0, (240, 243, 246)),  # 地。最後に置いて残りを埋める
     ]
-    write_png(os.path.join(HERE, "logo_primary.png"), width, height,
-              _render_shapes(width, height, shapes), alpha=True)
-
-
-def make_logo_vertical(width=460, height=460):
-    """縦組み。マークの下に文字を模した帯。"""
-    shapes = [
-        ((160, 80, 300, 220), 26, ACCENT),
-        ((110, 270, 350, 306), 6, FG),
-        ((160, 326, 300, 354), 6, (120, 128, 138)),
-    ]
-    write_png(os.path.join(HERE, "logo_vertical.png"), width, height,
+    write_png(os.path.join(HERE, "figure_sample.png"), width, height,
               _render_shapes(width, height, shapes), alpha=True)
 
 
 if __name__ == "__main__":
     make_background()
     print("background.png")
-    make_logo_primary()
-    print("logo_primary.png")
-    make_logo_vertical()
-    print("logo_vertical.png")
+    make_figure_sample()
+    print("figure_sample.png")

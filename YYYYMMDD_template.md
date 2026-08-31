@@ -8,11 +8,10 @@ header: "デッキのタイトル"
 <!-- _class: title -->
 <!-- _paginate: false -->
 
-![bg](.images/background.png)
-
 <!--
 画像パスはこのファイルからの相対。output/ にコピーしたら `../` を足す。
-`.images/background.png` → `../.images/background.png`
+`.images/figure_sample.png` → `../.images/figure_sample.png`
+表紙に背景画像は敷かない。
 -->
 
 # プレゼンテーションのタイトル
@@ -81,17 +80,7 @@ RETRY_LIMIT = 3
 
 図には、何を見てほしいのかを1行添える。
 
-![](.images/logo_primary.png)
-
----
-
-<!-- _class: figure-plain -->
-
-## 透過PNGは影と角丸を消す
-
-背景が透過している図解やロゴは `figure-plain` を使う。
-
-![](.images/logo_vertical.png)
+![](.images/figure_sample.png)
 
 ---
 

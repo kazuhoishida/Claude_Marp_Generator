@@ -8,7 +8,7 @@ Marp によるスライド生成システム。ラフな原稿を入力として
 ```
 .claude/commands/      スラッシュコマンド
 .cursor/rules/         スライド作成の詳細ルール（後述。必ず読む）
-.images/               ロゴ・背景などのブランドアセット
+.images/               背景・図版などの画像アセット
 themes/theme.css       カスタムテーマ。見た目の定義はすべてここ
 input/                 入力（ラフな原稿・議事録・箇条書きメモ）
 output/                出力（完成した .md と .pdf）
@@ -42,6 +42,8 @@ YYYYMMDD_template.md   スライドのテンプレート
 npm install                              # 初回のみ
 npm run images -- output/foo.md          # png で書き出して目視確認
 npm run pdf    -- output/foo.md          # PDF を出力
+npm run pptx   -- output/foo.md          # PowerPoint を出力（各ページは画像）
+npm run pptx-editable -- output/foo.md   # 文字を編集できる PowerPoint（LibreOffice が要る）
 npm run preview                          # ブラウザでライブプレビュー
 npm run assets                           # プレースホルダー画像を再生成
 ```
@@ -71,12 +73,11 @@ markdown を読んでいる限り気付けない:
 
 ## 画像アセット
 
-`.images/` の3点はプレースホルダー。本番のロゴ・背景が用意できたら
+`.images/` はプレースホルダー置き場。本番の図版が用意できたら
 **同名で上書きする**（参照側を変えずに済む）。
 
-- `background.png` — 表紙の背景
-- `logo_primary.png` — 横組みロゴ
-- `logo_vertical.png` — 縦組みロゴ
+- `figure_sample.png` — 図版のダミー（テンプレートの `figure-full` で使用）
+- `background.png` — 現在どこからも参照していない。背景画像は使わない方針
 
 再生成は `npm run assets`（`.images/generate_placeholders.py`）。
 標準ライブラリだけで動くので追加インストールは要らない。

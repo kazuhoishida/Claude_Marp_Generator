@@ -6,7 +6,8 @@
  * 設計方針:
  *   - 背景は白。プロジェクターでも印刷でも破綻しない
  *   - コードは背景と文字色のコントラストを必ず確保する
- *   - 画像はスライド端に触れさせない。必ず余白の内側に浮かせる
+ *   - 画像はスライド端に触れさせない。必ず余白の内側に置く
+ *   - 画像の周囲に影・角丸・枠を付けない。写真そのものを見せる
  *
  * 使い方:
  *   front-matter で `theme: custom-deck` を指定する
@@ -22,6 +23,7 @@
   --color-accent: #2b6cb0;
   --color-muted: #6b7280;
   --color-border: #d8dde3;
+  --divider-bg: #eceff2;
 
   /* コード */
   --code-bg: #eef1f5;
@@ -31,7 +33,6 @@
 
   /* レイアウト */
   --slide-padding: 70px;
-  --figure-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 
   /*
    * フォント。欧文は Helvetica、和文はヒラギノ角ゴ。
@@ -56,7 +57,7 @@ section {
   background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-sans);
-  font-size: 26px;
+  font-size: 22px;
   padding: var(--slide-padding);
   display: flex;
   flex-direction: column;
@@ -70,20 +71,20 @@ section {
 
 h1,
 h2 {
-  color: var(--color-accent);
-  margin: 0 0 0.4em;
+  color: var(--color-fg);
+  margin: 0 0 0.5em;
 }
 
 h1 {
-  font-size: 1.7em;
+  font-size: 1.45em;
 }
 
 h2 {
-  font-size: 1.35em;
+  font-size: 1.2em;
 }
 
 h3 {
-  font-size: 1.15em;
+  font-size: 1.05em;
   color: var(--color-fg);
 }
 
@@ -144,6 +145,7 @@ pre code {
    画像
    スライド端に接触させない。既定は小さめに抑え、
    図版が主役のスライドだけ figure-full で拡大する。
+   影・角丸・枠は付けない。写真や図をそのまま見せる。
    --------------------------------------------------------------- */
 
 img {
@@ -151,26 +153,17 @@ img {
   margin: 20px auto 0;
   max-width: 560px;
   max-height: 300px;
-  border-radius: 10px;
-  box-shadow: var(--figure-shadow);
 }
 
 /*
  * 図版が主役のスライド。
  * 高さの上限は「見出し + 説明1行」が乗る前提で決めてある。
- * 720px - 上下 padding 140px - 見出しと説明で約 150px = 430px。
+ * 720px - 上下 padding 140px - 見出しと説明で約 120px = 460px。
  * ここを増やすと縦長の画像がスライド下端からはみ出す。
  */
 section.figure-full img {
   max-width: 880px;
-  max-height: 430px;
-}
-
-/* 影や角丸を付けたくない図（透過PNGの図解など） */
-section.figure-plain img,
-img.plain {
-  box-shadow: none;
-  border-radius: 0;
+  max-height: 460px;
 }
 
 /* ---------------------------------------------------------------
@@ -227,10 +220,7 @@ section.lead h2 {
 }
 
 /*
- * 表紙。
- * 背景画像はテーマ側では指定しない。テーマ CSS は HTML にインライン展開されるため、
- * css 内の相対パスは「出力先」基準で解決されてしまい壊れやすい。
- * 背景は markdown 側で `![bg](../.images/background.png)` と書く。
+ * 表紙。背景画像は敷かない（白地に文字だけ）。
  */
 section.title {
   justify-content: center;
@@ -248,16 +238,25 @@ section.title h2 {
   font-weight: 400;
 }
 
-/* 章扉 */
+/* 章扉。スライド全面を薄いグレーで塗り、見出しの下線は白で抜く */
 section.section-divider {
+  background: var(--divider-bg);
   justify-content: center;
   text-align: center;
 }
 
 section.section-divider h1 {
-  border-bottom: 4px solid var(--color-accent);
-  display: inline-block;
-  padding-bottom: 0.2em;
+  padding: 0 0.9em;
+}
+
+/* 下線は白。グレーの地に白で抜く */
+section.section-divider h1::after {
+  background: #ffffff;
+  content: "";
+  display: block;
+  height: 4px;
+  margin: 0.3em auto 0;
+  width: 100%;
 }
 
 /*

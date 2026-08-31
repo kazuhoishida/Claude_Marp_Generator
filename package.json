@@ -5,6 +5,8 @@
   "description": "Marp によるスライド生成システム",
   "scripts": {
     "pdf": "marp --theme-set themes/ --html --allow-local-files --pdf",
+    "pptx": "marp --theme-set themes/ --html --allow-local-files --pptx",
+    "pptx-editable": "marp --theme-set themes/ --html --allow-local-files --pptx --pptx-editable",
     "images": "marp --theme-set themes/ --html --allow-local-files --images png",
     "html": "marp --theme-set themes/ --html --allow-local-files",
     "preview": "marp --theme-set themes/ --html --allow-local-files -s .",
