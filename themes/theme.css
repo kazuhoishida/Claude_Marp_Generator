@@ -5,9 +5,12 @@
  *
  * 設計方針:
  *   - 背景は白。プロジェクターでも印刷でも破綻しない
+ *   - 文字は黒、面はグレー。色を足すのはアクセント1色だけ
+ *   - アクセントは1スライドに1〜2箇所。多用すると全部が同じ重さになる
  *   - コードは背景と文字色のコントラストを必ず確保する
  *   - 画像はスライド端に触れさせない。必ず余白の内側に置く
  *   - 画像の周囲に影・角丸・枠を付けない。写真そのものを見せる
+ *   - 絵文字は使わない
  *
  * 使い方:
  *   front-matter で `theme: custom-deck` を指定する
@@ -17,13 +20,21 @@
 @import 'default';
 
 :root {
-  /* 配色 */
+  /*
+   * 配色。グレースケールを5段で持ち、色はアクセントの2色だけ。
+   * 面（card / callout）と地（divider）でグレーを使い分ける。
+   */
   --color-bg: #ffffff;
   --color-fg: #24292f;
+  --color-sub: #5b6472;
+  --color-muted: #78828f;
+  --color-line: #e3e8ed;
+  --color-surface: #f4f6f8;
+  --color-surface-strong: #eceff2;
+
   --color-accent: #2b6cb0;
-  --color-muted: #6b7280;
-  --color-border: #d8dde3;
-  --divider-bg: #eceff2;
+  --color-accent-2: #3e9ba4;
+  --accent-gradient: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
 
   /* コード */
   --code-bg: #eef1f5;
@@ -33,18 +44,30 @@
 
   /* レイアウト */
   --slide-padding: 70px;
+  --radius: 12px;
+  --gap: 22px;
 
   /*
-   * フォント。欧文は Helvetica、和文はヒラギノ角ゴ。
+   * 本文1行の上限。和文は1文字 = 1em なので、この値がほぼ1行の文字数になる。
+   * markdown 側で手動改行を入れずに40文字前後で折り返すための指定。
+   * 手動改行を入れると PPTX に変換したとき1行ごとに別のテキストボックスに
+   * 分かれ、あとから編集しても文章が流れ直さなくなる。
+   */
+  --measure: 40em;
+
+  /*
+   * フォント。和文・欧文とも Hiragino Sans の1書体で通す。
    *
-   * font-family は1文字ずつ先頭から順に探すため、和文グリフを持たない
-   * Helvetica を先に置くと、英数字だけ Helvetica になり、かなと漢字は
-   * Hiragino Sans に落ちる。この順序を入れ替えると全部ヒラギノの欧文になる。
+   * font-family は1文字ずつ先頭から順に探すので、Helvetica を先に置くと
+   * 英数字だけ Helvetica、かなと漢字は Hiragino になる。2書体はベースラインと
+   * 字幅が違うため、「A案」「ノズル3形状」のように混ざった行で英数字が
+   * 上下にずれる。PPTX に変換したときもフォントの切れ目でテキストボックスが
+   * 分割される。見た目の統一を優先して1書体に寄せる。
    *
    * 後半は macOS 以外でビルドしたときの保険。
    */
-  --font-sans: Helvetica, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
-    "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+    "Yu Gothic", Meiryo, Helvetica, sans-serif;
 }
 
 /*
@@ -58,6 +81,7 @@ section {
   color: var(--color-fg);
   font-family: var(--font-sans);
   font-size: 22px;
+  line-height: 1.7;
   padding: var(--slide-padding);
   display: flex;
   flex-direction: column;
@@ -67,12 +91,20 @@ section {
 
 /* ---------------------------------------------------------------
    見出し
+   色は付けない。大きさと余白だけで階層を作る。
    --------------------------------------------------------------- */
 
+/*
+ * ベーステーマは見出しを font-weight 600 にしている。ヒラギノは 600 だと
+ * 細いウエイトが選ばれて本文と区別が付かないので、700 を明示する。
+ */
 h1,
 h2 {
   color: var(--color-fg);
-  margin: 0 0 0.5em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  margin: 0 0 0.6em;
 }
 
 h1 {
@@ -83,9 +115,31 @@ h2 {
   font-size: 1.2em;
 }
 
+/*
+ * 小見出し。「小見出し + 本文」を1枚に2〜3組並べる使い方を想定して、
+ * 上に余白を取る。カードの中では先頭に来るので余白を戻す。
+ */
 h3 {
-  font-size: 1.05em;
   color: var(--color-fg);
+  font-size: 1em;
+  font-weight: 700;
+  margin: 1.2em 0 0.3em;
+}
+
+h3:first-child {
+  margin-top: 0;
+}
+
+/*
+ * 見出しの上に置く小さなラベル。章の名前や区分を添える。
+ * `<p class="label">検証結果</p>` のように書く。
+ */
+.label {
+  color: var(--color-muted);
+  font-size: 0.68em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0 0 0.7em;
 }
 
 /* ---------------------------------------------------------------
@@ -101,20 +155,42 @@ a {
   color: var(--color-accent);
 }
 
+/* 本文の行長を抑える。カードや表など部品の中には効かせない */
+section > p,
+section > ul,
+section > ol,
+section > blockquote {
+  max-width: var(--measure);
+}
+
+/*
+ * 画像は `<p>` に包まれて出るため、上の指定をそのまま受けると
+ * 中央寄せの基準が本文幅になって左にずれる。画像の段落は対象外にする。
+ */
+section > p:has(img) {
+  max-width: none;
+}
+
 ul,
 ol {
   margin: 0.4em 0;
+  padding-left: 1.3em;
 }
 
 li {
-  margin: 0.35em 0;
+  margin: 0.4em 0;
+  padding-left: 0.2em;
+}
+
+li::marker {
+  color: var(--color-muted);
 }
 
 blockquote {
-  border-left: 4px solid var(--color-border);
-  color: var(--color-muted);
-  margin: 0.8em 0;
-  padding: 0.2em 0 0.2em 1em;
+  border-left: 3px solid var(--color-line);
+  color: var(--color-sub);
+  margin: 0.9em 0;
+  padding: 0.1em 0 0.1em 1em;
 }
 
 /* ---------------------------------------------------------------
@@ -132,8 +208,8 @@ code {
 
 pre {
   background: var(--codeblock-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
 }
 
 pre code {
@@ -168,22 +244,43 @@ section.figure-full img {
 
 /* ---------------------------------------------------------------
    表
+   縦罫線を引かない。横罫線と余白だけで読ませる。
    --------------------------------------------------------------- */
 
-table {
+/*
+ * ベーステーマの表は GitHub の markdown 由来で、枠線とゼブラが付く。
+ * `section` を頭に付けて同じ強さにしないと打ち消せない
+ * （ベーステーマ側が `section table td` の形で書いているため）。
+ */
+section table {
   border-collapse: collapse;
-  margin: 0.6em 0;
+  display: table;
+  font-size: 0.95em;
+  margin: 0.7em 0;
+  width: 100%;
 }
 
-th,
-td {
-  border: 1px solid var(--color-border);
-  padding: 0.4em 0.8em;
+section table tr,
+section table tr:nth-child(2n) {
+  background: transparent;
+  border-top: none;
 }
 
-thead th {
-  background: var(--codeblock-bg);
-  color: var(--color-fg);
+section table th,
+section table td {
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  padding: 0.6em 0.9em 0.6em 0;
+  text-align: left;
+}
+
+section table thead th {
+  background: transparent;
+  border-bottom: 2px solid var(--color-fg);
+  color: var(--color-muted);
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 /* ---------------------------------------------------------------
@@ -194,18 +291,19 @@ header,
 footer {
   color: var(--color-muted);
   font-size: 0.6em;
+  letter-spacing: 0.04em;
 }
 
 section::after {
   color: var(--color-muted);
-  font-size: 0.7em;
+  font-size: 0.65em;
 }
 
 /* ---------------------------------------------------------------
    レイアウトバリエーション
    --------------------------------------------------------------- */
 
-/* 中央寄せ。表紙・章扉・締めに使う */
+/* 中央寄せ。章扉・締めに使う */
 section.lead {
   justify-content: center;
   text-align: center;
@@ -221,6 +319,7 @@ section.lead h2 {
 
 /*
  * 表紙。背景画像は敷かない（白地に文字だけ）。
+ * タイトルの下だけアクセントの罫線を1本入れる。
  */
 section.title {
   justify-content: center;
@@ -229,18 +328,28 @@ section.title {
 
 section.title h1 {
   font-size: 2.2em;
-  margin-bottom: 0.2em;
+  margin-bottom: 0.35em;
+}
+
+section.title h1::after {
+  background: var(--accent-gradient);
+  content: "";
+  display: block;
+  height: 3px;
+  margin: 0.5em auto 0;
+  width: 72px;
 }
 
 section.title h2 {
-  color: var(--color-fg);
-  font-size: 1.1em;
+  color: var(--color-sub);
+  font-size: 1.05em;
   font-weight: 400;
+  letter-spacing: 0.05em;
 }
 
 /* 章扉。スライド全面を薄いグレーで塗り、見出しの下線は白で抜く */
 section.section-divider {
-  background: var(--divider-bg);
+  background: var(--color-surface-strong);
   justify-content: center;
   text-align: center;
 }
@@ -259,26 +368,164 @@ section.section-divider h1::after {
   width: 100%;
 }
 
-/*
- * 2カラム。`<div class="columns">` を書くだけで効く。
- * section 側のクラス指定は要らない（指定漏れで黙って段組みが崩れるため）。
- */
+/* ---------------------------------------------------------------
+   部品
+   どれも `<div class="...">` を書くだけで効く。
+   section 側のクラス指定は要らない（指定漏れで黙って崩れるため）。
+   --------------------------------------------------------------- */
+
+/* 2カラム */
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5em;
+  gap: var(--gap);
   align-items: start;
-}
-
-.columns img {
-  margin-top: 0;
-  max-width: 100%;
 }
 
 /* 3カラム */
 .columns-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.2em;
+  gap: 18px;
   align-items: start;
+}
+
+.columns img,
+.columns-3 img {
+  margin-top: 0;
+  max-width: 100%;
+}
+
+/*
+ * カード。並列の項目をグレーの面に載せる。
+ * 左端のアクセント罫が「ここが1項目」の区切りになる。
+ */
+.cards {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: var(--gap);
+  align-items: stretch;
+  margin: 0.6em 0;
+}
+
+.cards > div {
+  background: var(--color-surface);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 1.1em 1.2em;
+}
+
+.cards h3 {
+  font-size: 1.05em;
+}
+
+.cards > div > :first-child {
+  margin-top: 0;
+}
+
+.cards > div > :last-child {
+  margin-bottom: 0;
+}
+
+.cards p,
+.cards li {
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+/*
+ * 数値。`**35万**` のように強調した数字が大きく出る。
+ * 数字の下の1行はその数字が何かの説明にする。
+ */
+.stats {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: var(--gap);
+  margin: 0.8em 0;
+  text-align: center;
+}
+
+.stats > div {
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 1.1em 0.8em;
+}
+
+.stats p {
+  margin: 0;
+}
+
+.stats strong {
+  color: var(--color-accent);
+  display: block;
+  font-size: 2.1em;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.15em;
+}
+
+.stats p:not(:first-child) {
+  color: var(--color-sub);
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+/*
+ * 手順。番号は自動で振る。markdown 側は `1.` の並びでよい。
+ */
+/*
+ * ベーステーマが `section div>ol:not([type])` で番号を出しているので、
+ * 同じ強さの `section div.steps > ol` で消す。弱く書くと番号が二重に出る。
+ */
+section div.steps > ol {
+  counter-reset: step;
+  list-style: none;
+  margin: 0.6em 0;
+  padding: 0;
+}
+
+.steps li {
+  counter-increment: step;
+  margin: 0.7em 0;
+  padding-left: 2.6em;
+  position: relative;
+}
+
+.steps li::before {
+  align-items: center;
+  background: var(--color-accent);
+  border-radius: 50%;
+  color: #ffffff;
+  content: counter(step);
+  display: flex;
+  font-size: 0.72em;
+  font-weight: 700;
+  height: 2.1em;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  top: 0.25em;
+  width: 2.1em;
+}
+
+/*
+ * コールアウト。そのスライドで一番言いたい1文を囲む。
+ * 1スライドに1つまで。2つ置くとどちらも目立たない。
+ */
+.callout {
+  background: var(--color-surface);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 0.9em 0;
+  padding: 1em 1.2em;
+}
+
+.callout > :first-child {
+  margin-top: 0;
+}
+
+.callout > :last-child {
+  margin-bottom: 0;
 }

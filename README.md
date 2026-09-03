@@ -96,7 +96,11 @@ CLAUDE.md              Claude Code 向けの指示
 markdown の front-matter に `style:` を書いて個別に上書きしない
 （デッキごとに見た目がずれていく）。
 
-使えるレイアウトは
+配色はグレースケール + アクセント1色。見出しにも色は付けない。
+カード・数値・手順・コールアウトの部品を用意してあるので、
+箇条書きだけで埋めずに使い分ける。
+
+使えるレイアウトと部品は
 [.cursor/rules/slide_rules.mdc](.cursor/rules/slide_rules.mdc) を参照。
 
 ## 画像アセット
