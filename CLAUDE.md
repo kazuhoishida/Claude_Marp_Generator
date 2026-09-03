@@ -7,6 +7,7 @@ Marp によるスライド生成システム。ラフな原稿を入力として
 
 ```
 .claude/commands/      スラッシュコマンド
+tools/                 素材の準備と pptx の後処理
 .cursor/rules/         スライド作成の詳細ルール（後述。必ず読む）
 .images/               背景・図版などの画像アセット
 themes/theme.css       カスタムテーマ。見た目の定義はすべてここ
@@ -47,6 +48,19 @@ npm run pptx-editable -- output/foo.md   # 文字を編集できる PowerPoint�
 npm run preview                          # ブラウザでライブプレビュー
 npm run assets                           # プレースホルダー画像を再生成
 ```
+
+## 素材の準備（ffmpeg）
+
+原稿の写真・動画はそのまま使わない。`tools/` で整えてから貼る。
+
+```bash
+python3 tools/prepare_images.py <出力先> <画像...>       # 長辺1400pxに縮小
+tools/convert_video.sh <in.mov> <out.mp4> [poster.png]   # 720p mp4 + 静止画
+python3 tools/embed_videos.py <pptx>                     # pptx に動画を埋め込む
+```
+
+動画は PDF に入らない。スライドには静止画を置き、PPTX にだけ埋める。
+どのスライドにどの動画を入れるかは素材ディレクトリの `videos.json` に書く。
 
 `--theme-set themes/` と `--allow-local-files` は npm script に入れてある。
 `marp` を直接叩くときは自分で付ける。付け忘れるとテーマが当たらない、

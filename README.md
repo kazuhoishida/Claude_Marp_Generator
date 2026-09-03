@@ -72,10 +72,34 @@ npm run pdf -- output/20260829_my-deck.md
 `marp` を直接叩くときは自分で付ける。付け忘れるとテーマが当たらない、
 またはローカル画像が読み込まれない。
 
+## 素材の準備
+
+原稿に付いてくる写真や動画は、そのままではスライドに使えない。
+`tools/` のスクリプトで整える（ffmpeg が要る。`brew install ffmpeg`）。
+
+```bash
+# 画像を縮小する（長辺1400pxまで。トリミングはしない）
+python3 tools/prepare_images.py output/assets/<デッキ名> path/to/*.jpg
+
+# 動画を720pのmp4にして、静止画も書き出す
+tools/convert_video.sh in.mov output/assets/<デッキ名>/in.mp4 poster.png 0.5
+```
+
+動画は PDF には入らない。スライドには静止画を貼り、PPTX にだけ動画を
+埋め込む。埋め込みは対応表（`videos.json`）を書いてから実行する。
+
+```bash
+python3 tools/embed_videos.py output/<デッキ名>.pptx
+```
+
 ## ディレクトリ
 
 ```
 .claude/commands/      スラッシュコマンド
+tools/                 素材の準備と pptx の後処理
+  prepare_images.py      画像の縮小
+  convert_video.sh       動画の mp4 変換 + 静止画の書き出し
+  embed_videos.py        pptx への動画埋め込みと段落の整形
 .cursor/rules/         スライド作成ルール
   slide_rules.mdc        記法・レイアウト・配色・画像
   compelling-content.mdc 構成・見出し・文章

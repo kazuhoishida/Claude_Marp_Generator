@@ -21,7 +21,7 @@
 
 :root {
   /*
-   * 配色。グレースケールを5段で持ち、色はアクセントの2色だけ。
+   * 配色。グレースケールを5段で持ち、色はアクセント1色だけ。
    * 面（card / callout）と地（divider）でグレーを使い分ける。
    */
   --color-bg: #ffffff;
@@ -33,8 +33,6 @@
   --color-surface-strong: #eceff2;
 
   --color-accent: #2b6cb0;
-  --color-accent-2: #3e9ba4;
-  --accent-gradient: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
 
   /* コード */
   --code-bg: #eef1f5;
@@ -46,14 +44,6 @@
   --slide-padding: 70px;
   --radius: 12px;
   --gap: 22px;
-
-  /*
-   * 本文1行の上限。和文は1文字 = 1em なので、この値がほぼ1行の文字数になる。
-   * markdown 側で手動改行を入れずに40文字前後で折り返すための指定。
-   * 手動改行を入れると PPTX に変換したとき1行ごとに別のテキストボックスに
-   * 分かれ、あとから編集しても文章が流れ直さなくなる。
-   */
-  --measure: 40em;
 
   /*
    * フォント。和文・欧文とも Hiragino Sans の1書体で通す。
@@ -155,22 +145,6 @@ a {
   color: var(--color-accent);
 }
 
-/* 本文の行長を抑える。カードや表など部品の中には効かせない */
-section > p,
-section > ul,
-section > ol,
-section > blockquote {
-  max-width: var(--measure);
-}
-
-/*
- * 画像は `<p>` に包まれて出るため、上の指定をそのまま受けると
- * 中央寄せの基準が本文幅になって左にずれる。画像の段落は対象外にする。
- */
-section > p:has(img) {
-  max-width: none;
-}
-
 ul,
 ol {
   margin: 0.4em 0;
@@ -227,19 +201,31 @@ pre code {
 img {
   display: block;
   margin: 20px auto 0;
-  max-width: 560px;
-  max-height: 300px;
+  max-width: 620px;
+  max-height: 340px;
 }
 
 /*
  * 図版が主役のスライド。
- * 高さの上限は「見出し + 説明1行」が乗る前提で決めてある。
- * 720px - 上下 padding 140px - 見出しと説明で約 120px = 460px。
- * ここを増やすと縦長の画像がスライド下端からはみ出す。
+ *
+ * 高さを固定値で決めると、説明が1行のときは余り、2行になるとはみ出す。
+ * 画像の段落を flex で伸縮させ、見出しと説明を引いた残りの高さいっぱいに
+ * 収まるようにする。下端の余白はスライドの padding（70px）がそのまま残る。
+ * 横は 980px までとして、左右にも余白を残す。
  */
+section.figure-full > p:has(img) {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  margin: 20px 0 0;
+  min-height: 0;        /* これが無いと flex アイテムが縮まない */
+}
+
 section.figure-full img {
-  max-width: 880px;
-  max-height: 460px;
+  margin: 0;
+  max-width: 980px;
+  max-height: 100%;
 }
 
 /* ---------------------------------------------------------------
@@ -318,8 +304,7 @@ section.lead h2 {
 }
 
 /*
- * 表紙。背景画像は敷かない（白地に文字だけ）。
- * タイトルの下だけアクセントの罫線を1本入れる。
+ * 表紙。背景画像も罫線も置かない（白地に文字だけ）。
  */
 section.title {
   justify-content: center;
@@ -328,16 +313,7 @@ section.title {
 
 section.title h1 {
   font-size: 2.2em;
-  margin-bottom: 0.35em;
-}
-
-section.title h1::after {
-  background: var(--accent-gradient);
-  content: "";
-  display: block;
-  height: 3px;
-  margin: 0.5em auto 0;
-  width: 72px;
+  margin-bottom: 0.6em;
 }
 
 section.title h2 {
