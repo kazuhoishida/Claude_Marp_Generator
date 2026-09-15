@@ -10,9 +10,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 
 ## 手順
 
-1. **ルールを読む。省略しない。**
-   - `.cursor/rules/slide_rules.mdc`
-   - `.cursor/rules/compelling-content.mdc`
+1. **`CLAUDE.md` を最後まで読む。省略しない。**
+   体裁（記法・レイアウト・配色・画像）と中身（構成・見出し・文章）の
+   ルールがどちらもここに入っている。
 
 2. 入力原稿を読む。`resources/` に関連しそうな資料があれば併せて読む。
 
